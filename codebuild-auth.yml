@@ -1,0 +1,32 @@
+Description: CodeBuild Credentials for Github via OAuth
+
+Parameters:
+
+  GithubTokenSecretName:
+    Type: String
+    Description: >-
+      The name of a Secret in Secrets Manager that contains your Github
+      username and Personal Access Token
+
+  GithubUsernameKey:
+    Type: String
+    Description: >-
+      The name of the JSON key in the Secret that contains your username
+
+  GithubAccessTokenKey:
+    Type: String
+    Description: >-
+      The name of the JSON key in the Secret that contains your
+      Personal Access Token
+
+Resources:
+
+  GithubCodeBuildCredentials:
+    Type: AWS::CodeBuild::SourceCredential
+    Properties:
+      AuthType: PERSONAL_ACCESS_TOKEN
+      ServerType: GITHUB
+      Username:
+        !Sub '{{resolve:secretsmanager:${GithubTokenSecretName}:SecretString:${GithubUsernameKey}}}'
+      Token:
+        !Sub '{{resolve:secretsmanager:${GithubTokenSecretName}:SecretString:${GithubAccessTokenKey}}}'
